@@ -3,7 +3,7 @@
   const $$ = (sel, ctx=document) => Array.from(ctx.querySelectorAll(sel));
   const music = document.getElementById('bgMusic');
   const soundToggle = document.getElementById('soundToggle');
-  const sprinklesLayer = document.getElementById('sprinkles');
+  // Sprinkles removed
 
   // Intro overlay logic
   const intro = $('#intro');
@@ -27,8 +27,7 @@
           updateSoundUI(false);
         });
       }
-      // Start sprinkles animation
-      startSprinkles();
+  // Sprinkles removed
       intro.classList.add('hidden');
       document.body.classList.remove('intro-open');
       main && main.setAttribute('aria-hidden', 'false');
@@ -84,52 +83,7 @@
   const saveData = navigator.connection && (navigator.connection.saveData || /2g/.test(String(navigator.connection.effectiveType||'')));
   const lowPower = prefersReduce || saveData;
 
-  // Sprinkles animation: floating colorful dots
-  function startSprinkles() {
-    if (!sprinklesLayer || lowPower) return;
-    const colors = ['#ff9aa2','#ffb7b2','#ffdac1','#e2f0cb','#b5ead7','#c7ceea', '#ffd166', '#06d6a0', '#118ab2', '#ff6ba8'];
-    let running = true;
-    const particles = 38; // light
-    const els = [];
-    for (let i = 0; i < particles; i++) {
-      const d = document.createElement('span');
-      d.style.position = 'absolute';
-      d.style.left = Math.random()*100 + '%';
-      d.style.top = (Math.random()*100) + '%';
-      const size = 4 + Math.random()*3;
-      d.style.width = size + 'px';
-      d.style.height = size + 'px';
-      d.style.borderRadius = '50%';
-      d.style.background = colors[i % colors.length];
-      d.style.opacity = '0.85';
-      d.style.filter = 'blur(0.2px)';
-      sprinklesLayer.appendChild(d);
-      els.push(d);
-      float(d);
-    }
-    function float(el) {
-      const dur = 6000 + Math.random()*5000;
-      const dx = (Math.random() * 30 - 15);
-      const dy = (-20 - Math.random()*30);
-      const start = performance.now();
-      const sx = el.offsetLeft;
-      const sy = el.offsetTop;
-      function step(now) {
-        if (!running) return;
-        const t = (now - start) / dur;
-        const p = t - Math.floor(t);
-        const x = sx + dx * p + Math.sin(p * Math.PI*2) * 4;
-        const y = sy + dy * p;
-        el.style.transform = `translate(${x - sx}px, ${y - sy}px)`;
-        requestAnimationFrame(step);
-      }
-      requestAnimationFrame(step);
-    }
-    // Cleanup on page hide
-    document.addEventListener('visibilitychange', () => {
-      if (document.hidden) running = false;
-    });
-  }
+  // Sprinkles feature removed
 
   // Sound toggle
   if (soundToggle) {
@@ -150,54 +104,13 @@
     soundToggle.title = isPlaying ? 'Pause music' : 'Play music';
   }
 
-  // --- Scroll-triggered animations ---
-  const observerOptions = {
-    threshold: 0.1,
-    rootMargin: '0px 0px -50px 0px'
-  };
+  // Scroll-triggered animations removed
 
-  const animateObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('visible');
-        animateObserver.unobserve(entry.target);
-      }
-    });
-  }, observerOptions);
-
-  // Observe all elements with animate-on-scroll class
-  setTimeout(() => {
-    $$('.animate-on-scroll').forEach(el => {
-      animateObserver.observe(el);
-    });
-  }, 100);
-
-  // --- Enhanced photo strip with improved interactions ---
+  // --- Photo strip: simple horizontal slide (no momentum/smooth observer) ---
   const film = $('#film');
   if (film) {
+    // Basic pointer drag to slide horizontally; native snap does the rest
     let isDown = false, startX = 0, startScroll = 0;
-    let vx = 0, lastX = 0, lastT = 0, momentumId = 0;
-
-    const friction = 0.92; // enhanced momentum decay
-    const minV = 0.05; // stop threshold
-
-    // Add smooth scroll snap behavior
-    let snapTimeout;
-    function smoothSnapToCard() {
-      clearTimeout(snapTimeout);
-      snapTimeout = setTimeout(() => {
-        const cardWidth = film.querySelector('.card')?.offsetWidth || 300;
-        const gap = 16;
-        const scrollLeft = film.scrollLeft;
-        const targetIndex = Math.round(scrollLeft / (cardWidth + gap));
-        const targetScroll = targetIndex * (cardWidth + gap);
-        
-        film.scrollTo({
-          left: targetScroll,
-          behavior: 'smooth'
-        });
-      }, 100);
-    }
 
     function onPointerDown(e) {
       if (e.pointerType === 'mouse' || e.pointerType === 'pen') {
@@ -205,82 +118,54 @@
         film.setPointerCapture(e.pointerId);
         startX = e.clientX;
         startScroll = film.scrollLeft;
-        lastX = e.clientX;
-        lastT = performance.now();
-        vx = 0;
-        cancelAnimationFrame(momentumId);
-        film.style.scrollSnapType = 'none'; // Disable snap during drag
+        film.style.scrollSnapType = 'none';
       }
     }
-
     function onPointerMove(e) {
       if (!isDown) return;
       const dx = e.clientX - startX;
       film.scrollLeft = startScroll - dx;
-      const now = performance.now();
-      const dt = now - lastT;
-      if (dt > 0) {
-        vx = (e.clientX - lastX) / dt;
-        lastX = e.clientX;
-        lastT = now;
-      }
     }
-
     function onPointerUp(e) {
       if (!isDown) return;
       isDown = false;
       try { film.releasePointerCapture(e.pointerId); } catch(_){}
-      
-      // Re-enable snap
       film.style.scrollSnapType = 'x mandatory';
-      
-      // Enhanced momentum with better feel
-      let v = vx * 20;
-      const maxScroll = film.scrollWidth - film.clientWidth;
-      
-      function step() {
-        film.scrollLeft = Math.min(maxScroll, Math.max(0, film.scrollLeft - v));
-        v *= friction;
-        if (Math.abs(v) > minV) {
-          momentumId = requestAnimationFrame(step);
-        } else {
-          smoothSnapToCard();
-        }
-      }
-      
-      if (Math.abs(v) > minV) step();
-      else smoothSnapToCard();
+      // Snap to nearest card instantly (no smooth animation)
+      const cardWidth = film.querySelector('.card')?.offsetWidth || 300;
+      const gap = 16;
+      const targetIndex = Math.round(film.scrollLeft / (cardWidth + gap));
+      const targetScroll = targetIndex * (cardWidth + gap);
+      film.scrollLeft = targetScroll;
     }
 
-    // Enhanced event listeners
     film.addEventListener('pointerdown', onPointerDown, { passive: true });
     film.addEventListener('pointermove', onPointerMove, { passive: true });
     film.addEventListener('pointerup', onPointerUp, { passive: true });
     film.addEventListener('pointercancel', onPointerUp, { passive: true });
     film.addEventListener('mouseleave', onPointerUp, { passive: true });
 
-    // Enhanced keyboard support
+    // Keyboard support, immediate slide without smooth animations
     film.addEventListener('keydown', (e) => {
+      const cardWidth = film.querySelector('.card')?.offsetWidth || 300;
+      const step = cardWidth + 16;
       if (e.key === 'ArrowLeft') {
         e.preventDefault();
-        film.scrollBy({ left: -film.clientWidth * 0.9, behavior: 'smooth' });
+        film.scrollLeft -= step;
       }
       if (e.key === 'ArrowRight') {
         e.preventDefault();
-        film.scrollBy({ left: film.clientWidth * 0.9, behavior: 'smooth' });
+        film.scrollLeft += step;
       }
       if (e.key === 'Home') {
         e.preventDefault();
-        film.scrollTo({ left: 0, behavior: 'smooth' });
+        film.scrollLeft = 0;
       }
       if (e.key === 'End') {
         e.preventDefault();
-        film.scrollTo({ left: film.scrollWidth, behavior: 'smooth' });
+        film.scrollLeft = film.scrollWidth;
       }
     });
-
-    // Touch-friendly scroll snap fallback
-    film.addEventListener('scroll', smoothSnapToCard, { passive: true });
   }
 
   // Boost initial UX: focus the film on anchor click for keyboard
