@@ -237,9 +237,7 @@ body.intro-open {
 .film::-webkit-scrollbar { display: none; }
 .card {
   position: relative;
-  /* Use aspect-ratio for consistent sizing (portrait) */
-  aspect-ratio: 3 / 4;
-  height: auto;
+  height: clamp(220px, 58vw, 320px); /* a bit taller for better crop */
   border-radius: var(--radius);
   overflow: hidden;
   scroll-snap-align: center;
@@ -260,10 +258,7 @@ body.intro-open {
 }
 .card img { 
   object-fit: cover; 
-  /* Unified crop focusing slightly upper-center for faces */
-  object-position: var(--pos, 50% 40%);
-  width: 100%;
-  height: 100%;
+  object-position: var(--pos, 50% 50%);
 }
 
 /* Per-image crop focus utilities */
@@ -274,6 +269,25 @@ body.intro-open {
 .img-pos-angel { --pos: 50% 40%; }
 .card:hover img {
   transform: scale(1.05);
+}
+
+/* Face-first focus for specific photos (attribute selectors avoid HTML changes) */
+.film img[src*="23.30.38_8fa08065.jpg"],
+.film img[src*="23.30.55_33337197.jpg"],
+.film img[src*="23.31.00_189d56ff.jpg"],
+.film img[src*="23.31.00_1f11828b.jpg"],
+.film img[src*="23.31.01_83baf099.jpg"],
+.film img[src*="23.31.01_d3559f96.jpg"],
+.film img[src*="23.31.02_313b3ea9.jpg"],
+.film img[src*="23.31.03_8edbb226.jpg"],
+.film img[src*="23.31.04_11b4d042.jpg"],
+.film img[src*="23.31.04_d1a53b39.jpg"],
+.film img[src*="23.31.04_febe2e64.jpg"],
+.film img[src*="23.31.05_0acd7547.jpg"],
+.film img[src*="23.31.05_b78a0511.jpg"],
+.film img[src*="23.31.05_c8178312.jpg"] {
+  /* Nudge crop upwards a bit so faces sit in the upper third */
+  object-position: 50% 32%;
 }
 
 .caption { 
