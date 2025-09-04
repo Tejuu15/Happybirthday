@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  
+  <meta name="color-scheme" content="light" />
+  <title>Happy Birthday, Kerthuuu 🎉</title>
+  <meta name="description" content="A fast, mobile-first birthday page for HerName — photos, wishes, and subtle parallax magic." />
+
+  <!-- Fonts: Mona Sans for modern look -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Mona+Sans:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Intro overlay with circular button -->
+  <div id="intro" class="intro" aria-label="Open surprise" role="dialog" aria-modal="true">
+    <button id="openSurprise" class="circle-btn" aria-label="Open surprise">Open
+      <span class="circle-btn__sub">Surprise</span>
+    </button>
+  </div>
+  <div id="confettiLayer" class="confetti-layer" aria-hidden="true"></div>
+  <!-- Ambient sprinkles and music controls -->
+  <div id="sprinkles" class="sprinkles" aria-hidden="true"></div>
+  <button id="soundToggle" class="sound-toggle" aria-pressed="false" aria-label="Play music" title="Play music">🔈</button>
+  <audio id="bgMusic" preload="none" loop aria-hidden="true"></audio>
+  <main class="wrap" id="top">
+    <header class="hero" role="banner">
+      <h1 class="title">Happy Birthday, <span id="name">Keerthuuu</span> 🎂</h1>
+      <p class="subtitle">Wishing you a year as bright and joyful as you are. Scroll for sweet memories.</p>
+
+      <!-- Hero portrait (first image). Using attached JPG in /photos -->
+      <div class="portrait-card animate-on-scroll">
+        <img class="portrait" src="photos/download.jpg" alt="Portrait" decoding="async" loading="eager" />
+      </div>
+
+  <!-- view-photos button removed -->
+    </header>
+
+  <section id="photos" aria-labelledby="photos-title" class="photos animate-on-scroll stagger-2">
+      <h2 class="h2" id="photos-title">Memory Strip</h2>
+  <p class="subtitle subtitle--muted">Swipe through the highlights.</p>
+
+      <div class="film-wrap">
+        <!-- Scrolling photo strip using dedicated images in /photos -->
+        <div class="film animate-on-scroll stagger-3" id="film" aria-label="Photo strip" tabindex="0">
+          <figure class="card">
+            <img class="img-pos-dam" src="photos/WhatsApp Image 2025-09-02 at 23.30.55_710cd715.jpg" alt="Overlook of dam and gardens" loading="lazy" decoding="async" />
+          </figure>
+          <figure class="card">
+            <img class="img-pos-river" src="photos/WhatsApp Image 2025-09-02 at 23.30.57_fe36f76f.jpg" alt="Smiling at the riverside" loading="lazy" decoding="async" />
+          </figure>
+          <figure class="card">
+            <img class="img-pos-temple" src="photos/WhatsApp Image 2025-09-02 at 23.30.59_3581d201.jpg" alt="At a temple with carved pillars" loading="lazy" decoding="async" />
+          </figure>
+          <figure class="card">
+            <img class="img-pos-clinic" src="photos/WhatsApp Image 2025-09-02 at 23.31.00_19071107.jpg" alt="In clinic attire, seated and smiling" loading="lazy" decoding="async" />
+          </figure>
+          <figure class="card">
+            <img class="img-pos-angel" src="photos/WhatsApp Image 2025-09-02 at 23.31.02_c5f58694.jpg" alt="Posing with neon angel wings backdrop" loading="lazy" decoding="async" />
+          </figure>
+        </div>
+        <p class="caption">Tip: swipe left/right. Cards snap gently into place.</p>
+      </div>
+    </section>
+
+    <footer>
+      Made with ❤ for <strong>Keerthuuu</strong>. <a href="#top">Back to top</a>
+    </footer>
+  </main>
+
+  <!-- Lightbox for viewing photos full-screen -->
+  <div id="lightbox" class="lightbox" aria-hidden="true" role="dialog" aria-label="Photo viewer">
+    <div class="lightbox__bg" aria-hidden="true"></div>
+    <div class="lightbox__overlay" aria-hidden="true"></div>
+    <div class="lightbox__content">
+      <button class="lightbox__close" aria-label="Close viewer">✕</button>
+      <img class="lightbox__img" src="" alt="" />
+    </div>
+  </div>
+
+  <script src="app.js" defer></script>
+</body>
+</html>
