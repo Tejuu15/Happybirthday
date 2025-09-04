@@ -245,35 +245,41 @@
     function smoothSnapToCard() {
       clearTimeout(snapTimeout);
       snapTimeout = setTimeout(() => {
-        const cardWidth = film.querySelector('.card')?.offsetWidth || 300;
-        const gap = 16;
-        const scrollLeft = film.scrollLeft;
-        const targetIndex = Math.round(scrollLeft / (cardWidth + gap));
-        const targetScroll = targetIndex * (cardWidth + gap);
-        
-        film.scrollTo({
-          left: targetScroll,
-          behavior: 'smooth'
+        const cards = film.querySelectorAll('.card');
+        if (!cards.length) return;
+        const containerRect = film.getBoundingClientRect();
+        const containerCenter = containerRect.left + containerRect.width / 2;
+        let closest = null; let closestDist = Infinity;
+        cards.forEach(card => {
+          const r = card.getBoundingClientRect();
+          const cardCenter = r.left + r.width / 2;
+            const d = Math.abs(cardCenter - containerCenter);
+            if (d < closestDist) { closestDist = d; closest = card; }
         });
-      }, 100);
+        if (closest) {
+          const target = closest.offsetLeft - (film.clientWidth - closest.offsetWidth) / 2;
+          film.scrollTo({ left: target, behavior: 'smooth' });
+        }
+      }, 80);
     }
 
     function onPointerDown(e) {
-      if (e.pointerType === 'mouse' || e.pointerType === 'pen') {
-        isDown = true;
-        film.setPointerCapture(e.pointerId);
-        startX = e.clientX;
-        startScroll = film.scrollLeft;
-        lastX = e.clientX;
-        lastT = performance.now();
-        vx = 0;
-        cancelAnimationFrame(momentumId);
-        film.style.scrollSnapType = 'none'; // Disable snap during drag
-      }
+      // Accept touch, mouse, pen
+      isDown = true;
+      try { film.setPointerCapture(e.pointerId); } catch(_){ }
+      startX = e.clientX;
+      startScroll = film.scrollLeft;
+      lastX = e.clientX;
+      lastT = performance.now();
+      vx = 0;
+      cancelAnimationFrame(momentumId);
+      film.style.scrollSnapType = 'none'; // Disable snap during drag
     }
 
     function onPointerMove(e) {
       if (!isDown) return;
+      // Prevent vertical scroll hijack only if horizontal movement dominates
+      if (e.cancelable) e.preventDefault();
       const dx = e.clientX - startX;
       film.scrollLeft = startScroll - dx;
       const now = performance.now();
@@ -312,8 +318,8 @@
     }
 
     // Enhanced event listeners
-    film.addEventListener('pointerdown', onPointerDown, { passive: true });
-    film.addEventListener('pointermove', onPointerMove, { passive: true });
+  film.addEventListener('pointerdown', onPointerDown, { passive: true });
+  film.addEventListener('pointermove', onPointerMove, { passive: false });
     film.addEventListener('pointerup', onPointerUp, { passive: true });
     film.addEventListener('pointercancel', onPointerUp, { passive: true });
     film.addEventListener('mouseleave', onPointerUp, { passive: true });
@@ -338,8 +344,7 @@
       }
     });
 
-    // Touch-friendly scroll snap fallback
-    film.addEventListener('scroll', smoothSnapToCard, { passive: true });
+  // Removed continuous scroll listener to avoid jitter; snapping occurs after drag/momentum.
   }
 
   // Boost initial UX: focus the film on anchor click for keyboard

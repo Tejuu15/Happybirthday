@@ -237,7 +237,9 @@ body.intro-open {
 .film::-webkit-scrollbar { display: none; }
 .card {
   position: relative;
-  height: clamp(220px, 58vw, 320px); /* a bit taller for better crop */
+  /* Use aspect-ratio for consistent sizing (portrait) */
+  aspect-ratio: 3 / 4;
+  height: auto;
   border-radius: var(--radius);
   overflow: hidden;
   scroll-snap-align: center;
@@ -258,7 +260,10 @@ body.intro-open {
 }
 .card img { 
   object-fit: cover; 
-  object-position: var(--pos, 50% 50%);
+  /* Unified crop focusing slightly upper-center for faces */
+  object-position: var(--pos, 50% 40%);
+  width: 100%;
+  height: 100%;
 }
 
 /* Per-image crop focus utilities */
