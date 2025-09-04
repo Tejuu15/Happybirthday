@@ -62,21 +62,7 @@ body.intro-open {
 
 /* Removed unused keyframes to reduce CSS weight */
 
-.animate-on-scroll {
-  opacity: 0;
-  transform: translateY(30px);
-  transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), 
-              transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.animate-on-scroll.visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.stagger-1 { transition-delay: 0.1s; }
-.stagger-2 { transition-delay: 0.2s; }
-.stagger-3 { transition-delay: 0.3s; }
+/* Removed scroll-triggered animate-on-scroll classes */
 
 /* --- Hero --- */
 .hero { display: grid; gap: 16px; margin-top: 8px; text-align: center; justify-items: center; }
@@ -273,13 +259,8 @@ body.intro-open {
   font-weight: 400;
 }
 
-/* Confetti canvas layer */
-.confetti-layer {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 9998;
-}
+/* Confetti canvas layer (kept for intro burst) */
+.confetti-layer { position: fixed; inset: 0; pointer-events: none; z-index: 9998; }
 
 /* Intro overlay */
 .intro {
@@ -415,13 +396,7 @@ footer {
   text-align: center;
 }
 
-/* --- Sprinkles (floating confetti-like dots) --- */
-.sprinkles {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 2;
-}
+/* Sprinkles removed */
 
 /* --- Sound toggle button --- */
 .sound-toggle {
