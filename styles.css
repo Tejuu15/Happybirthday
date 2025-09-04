@@ -233,6 +233,10 @@ body.intro-open {
   scroll-padding: 20px;
   padding: 4px 4px 12px;
   touch-action: pan-x;
+  /* Performance & smoother feel */
+  will-change: scroll-position;
+  scroll-behavior: smooth; /* for keyboard / programmatic */
+  -webkit-overflow-scrolling: touch; /* iOS inertia */
 }
 .film::-webkit-scrollbar { display: none; }
 .card {

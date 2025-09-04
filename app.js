@@ -295,26 +295,32 @@
       if (!isDown) return;
       isDown = false;
       try { film.releasePointerCapture(e.pointerId); } catch(_){}
-      
-      // Re-enable snap
-      film.style.scrollSnapType = 'x mandatory';
-      
+      // Keep snap disabled during momentum; re-enable after settle
       // Enhanced momentum with better feel
-      let v = vx * 20;
+      let v = vx * 22; // slightly stronger initial velocity
       const maxScroll = film.scrollWidth - film.clientWidth;
-      
+
+      function finish() {
+        // Re-enable snap & snap gently to nearest
+        film.style.scrollSnapType = 'x mandatory';
+        smoothSnapToCard();
+      }
+
       function step() {
         film.scrollLeft = Math.min(maxScroll, Math.max(0, film.scrollLeft - v));
         v *= friction;
         if (Math.abs(v) > minV) {
           momentumId = requestAnimationFrame(step);
         } else {
-          smoothSnapToCard();
+          finish();
         }
       }
-      
-      if (Math.abs(v) > minV) step();
-      else smoothSnapToCard();
+
+      if (Math.abs(v) > minV) {
+        step();
+      } else {
+        finish();
+      }
     }
 
     // Enhanced event listeners
