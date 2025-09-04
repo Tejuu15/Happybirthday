@@ -40,27 +40,6 @@ body.intro-open {
   --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   --transition-fast: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
 }
-/* Lite / data-saver mode overrides */
-html.lite {
-  --shadow: 0 1px 2px rgba(0,0,0,.05);
-  --shadow-hover: 0 2px 4px rgba(0,0,0,.08);
-}
-html.lite .circle-btn,
-html.lite .card,
-html.lite .portrait-card { backdrop-filter: none; -webkit-backdrop-filter: none; }
-html.lite .lightbox__overlay { filter: blur(6px) brightness(0.7) saturate(90%); }
-html.lite .card:hover { transform: none; }
-html.lite .card:hover img { transform: none; }
-html.lite .sprinkles { display: none; }
-
-@media (max-width: 480px) {
-  .wrap { padding: clamp(14px, 5vw, 22px); }
-  .film { gap: 12px; scroll-padding: 14px; }
-  .card { height: clamp(200px, 64vw, 300px); }
-  .circle-btn { width: 150px; height: 150px; font-size: 18px; }
-  .title { font-size: clamp(26px, 9vw, 40px); }
-  .subtitle { font-size: clamp(14px, 4.4vw, 17px); }
-}
 
 /* --- Animations --- */
 @keyframes fadeInUp {
@@ -254,10 +233,6 @@ html.lite .sprinkles { display: none; }
   scroll-padding: 20px;
   padding: 4px 4px 12px;
   touch-action: pan-x;
-  /* Performance & smoother feel */
-  will-change: scroll-position;
-  scroll-behavior: smooth; /* for keyboard / programmatic */
-  -webkit-overflow-scrolling: touch; /* iOS inertia */
 }
 .film::-webkit-scrollbar { display: none; }
 .card {
@@ -296,25 +271,6 @@ html.lite .sprinkles { display: none; }
   transform: scale(1.05);
 }
 
-/* Face-first focus for specific photos (attribute selectors avoid HTML changes) */
-.film img[src*="23.30.38_8fa08065.jpg"],
-.film img[src*="23.30.55_33337197.jpg"],
-.film img[src*="23.31.00_189d56ff.jpg"],
-.film img[src*="23.31.00_1f11828b.jpg"],
-.film img[src*="23.31.01_83baf099.jpg"],
-.film img[src*="23.31.01_d3559f96.jpg"],
-.film img[src*="23.31.02_313b3ea9.jpg"],
-.film img[src*="23.31.03_8edbb226.jpg"],
-.film img[src*="23.31.04_11b4d042.jpg"],
-.film img[src*="23.31.04_d1a53b39.jpg"],
-.film img[src*="23.31.04_febe2e64.jpg"],
-.film img[src*="23.31.05_0acd7547.jpg"],
-.film img[src*="23.31.05_b78a0511.jpg"],
-.film img[src*="23.31.05_c8178312.jpg"] {
-  /* Nudge crop upwards a bit so faces sit in the upper third */
-  object-position: 50% 32%;
-}
-
 .caption { 
   font-size: 14px; 
   color: var(--text-subtle); 
@@ -350,12 +306,11 @@ html.lite .sprinkles { display: none; }
   width: 180px; height: 180px;
   border-radius: 50%;
   border: none;
-  background: conic-gradient(from 180deg at 50% 50%, #f8d7da, #f5c2c7);
-  color: #6f2232;
-  font-family: 'Mona Sans', sans-serif;
+  background: conic-gradient(from 180deg at 50% 50%, var(--accent), var(--accent-light));
+  color: #fff;
   font-weight: 800;
   letter-spacing: 0.4px;
-  box-shadow: 0 12px 30px rgba(248, 215, 218, 0.4);
+  box-shadow: 0 12px 30px rgba(2,6,23,0.15);
   cursor: pointer;
   display: grid;
   place-items: center;
@@ -494,15 +449,6 @@ footer {
 .sound-toggle:active { transform: translateY(0) scale(0.98); }
 .sound-toggle[aria-pressed="true"] { background: linear-gradient(135deg, var(--accent-light), var(--accent)); }
 
-/* Disabled state */
-.sound-toggle:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-  filter: grayscale(20%);
-  box-shadow: none;
-  transform: none;
-}
-
 /* --- Reduced motion --- */
 @media (prefers-reduced-motion: reduce) {
   .btn:active { 
@@ -514,11 +460,3 @@ footer {
     transition-duration: 0.01ms !important;
   }
 }
-
-/* --- Overrides: remove hover / entrance animations (user request) --- */
-.card:hover, .card:focus-visible { transform: none !important; box-shadow: var(--shadow) !important; }
-.card:hover img { transform: none !important; }
-.btn--primary:hover, .btn--ghost:hover, .circle-btn:hover, .sound-toggle:hover { transform: none !important; box-shadow: inherit !important; }
-.animate-on-scroll { opacity: 1 !important; transform: none !important; }
-.title, .subtitle { animation: none !important; }
-.lightbox__img { transition: none !important; transform: none !important; }
