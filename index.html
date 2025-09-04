@@ -5,9 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   
   <meta name="color-scheme" content="light" />
-  <meta name="theme-color" content="#4A90E2" />
-  <title>Happy Birthday, Keerthuuu 🎉</title>
-  <meta name="description" content="A fast, mobile-first birthday page for Keerthuuu — photos, wishes, and subtle parallax magic." />
+  <title>Happy Birthday, Kerthuuu 🎉</title>
+  <meta name="description" content="A fast, mobile-first birthday page for HerName — photos, wishes, and subtle parallax magic." />
 
   <!-- Fonts: Mona Sans for modern look -->
   <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
@@ -23,30 +22,33 @@
     </button>
   </div>
   <div id="confettiLayer" class="confetti-layer" aria-hidden="true"></div>
-  <!-- Ambient sprinkles and music controls -->
-  <div id="sprinkles" class="sprinkles" aria-hidden="true"></div>
+  <!-- Music controls -->
   <button id="soundToggle" class="sound-toggle" aria-pressed="false" aria-label="Play music" title="Play music">🔈</button>
-  <audio id="bgMusic" preload="none" loop aria-hidden="true"></audio>
+  <audio id="bgMusic" preload="auto" loop aria-hidden="true">
+    <source src="audio/birthday.mp3" type="audio/mpeg" />
+    <source src="audio/birthday.ogg" type="audio/ogg" />
+    Your browser does not support the audio element.
+  </audio>
   <main class="wrap" id="top">
     <header class="hero" role="banner">
       <h1 class="title">Happy Birthday, <span id="name">Keerthuuu</span> 🎂</h1>
       <p class="subtitle">Wishing you a year as bright and joyful as you are. Scroll for sweet memories.</p>
 
       <!-- Hero portrait (first image). Using attached JPG in /photos -->
-      <div class="portrait-card animate-on-scroll">
-  <img class="portrait" src="photos/download.jpg" alt="Portrait" decoding="async" loading="eager" fetchpriority="high" />
+  <div class="portrait-card">
+        <img class="portrait" src="photos/download.jpg" alt="Portrait" decoding="async" loading="eager" />
       </div>
 
   <!-- view-photos button removed -->
     </header>
 
-  <section id="photos" aria-labelledby="photos-title" class="photos animate-on-scroll stagger-2">
+  <section id="photos" aria-labelledby="photos-title" class="photos">
       <h2 class="h2" id="photos-title">Memory Strip</h2>
   <p class="subtitle subtitle--muted">Swipe through the highlights.</p>
 
       <div class="film-wrap">
-        <!-- Scrolling photo strip using dedicated images in /photos -->
-        <div class="film animate-on-scroll stagger-3" id="film" aria-label="Photo strip" tabindex="0">
+  <!-- Scrolling photo strip using dedicated images in /photos -->
+  <div class="film" id="film" aria-label="Photo strip" tabindex="0">
           <figure class="card">
             <img class="img-pos-dam" src="photos/WhatsApp Image 2025-09-02 at 23.30.55_710cd715.jpg" alt="Overlook of dam and gardens" loading="lazy" decoding="async" />
           </figure>
@@ -61,49 +63,6 @@
           </figure>
           <figure class="card">
             <img class="img-pos-angel" src="photos/WhatsApp Image 2025-09-02 at 23.31.02_c5f58694.jpg" alt="Posing with neon angel wings backdrop" loading="lazy" decoding="async" />
-          </figure>
-          <!-- Additional photos -->
-          <figure class="card">
-            <img src="photos/WhatsApp Image 2025-09-02 at 23.30.38_8fa08065.jpg" alt="Memory photo" loading="lazy" decoding="async" />
-          </figure>
-          <figure class="card">
-            <img src="photos/WhatsApp Image 2025-09-02 at 23.30.55_33337197.jpg" alt="Memory photo" loading="lazy" decoding="async" />
-          </figure>
-          <figure class="card">
-            <img src="photos/WhatsApp Image 2025-09-02 at 23.31.00_189d56ff.jpg" alt="Memory photo" loading="lazy" decoding="async" />
-          </figure>
-          <figure class="card">
-            <img src="photos/WhatsApp Image 2025-09-02 at 23.31.00_1f11828b.jpg" alt="Memory photo" loading="lazy" decoding="async" />
-          </figure>
-          <figure class="card">
-            <img src="photos/WhatsApp Image 2025-09-02 at 23.31.01_83baf099.jpg" alt="Memory photo" loading="lazy" decoding="async" />
-          </figure>
-          <figure class="card">
-            <img src="photos/WhatsApp Image 2025-09-02 at 23.31.01_d3559f96.jpg" alt="Memory photo" loading="lazy" decoding="async" />
-          </figure>
-          <figure class="card">
-            <img src="photos/WhatsApp Image 2025-09-02 at 23.31.02_313b3ea9.jpg" alt="Memory photo" loading="lazy" decoding="async" />
-          </figure>
-          <figure class="card">
-            <img src="photos/WhatsApp Image 2025-09-02 at 23.31.03_8edbb226.jpg" alt="Memory photo" loading="lazy" decoding="async" />
-          </figure>
-          <figure class="card">
-            <img src="photos/WhatsApp Image 2025-09-02 at 23.31.04_11b4d042.jpg" alt="Memory photo" loading="lazy" decoding="async" />
-          </figure>
-          <figure class="card">
-            <img src="photos/WhatsApp Image 2025-09-02 at 23.31.04_d1a53b39.jpg" alt="Memory photo" loading="lazy" decoding="async" />
-          </figure>
-          <figure class="card">
-            <img src="photos/WhatsApp Image 2025-09-02 at 23.31.04_febe2e64.jpg" alt="Memory photo" loading="lazy" decoding="async" />
-          </figure>
-          <figure class="card">
-            <img src="photos/WhatsApp Image 2025-09-02 at 23.31.05_0acd7547.jpg" alt="Memory photo" loading="lazy" decoding="async" />
-          </figure>
-          <figure class="card">
-            <img src="photos/WhatsApp Image 2025-09-02 at 23.31.05_b78a0511.jpg" alt="Memory photo" loading="lazy" decoding="async" />
-          </figure>
-          <figure class="card">
-            <img src="photos/WhatsApp Image 2025-09-02 at 23.31.05_c8178312.jpg" alt="Memory photo" loading="lazy" decoding="async" />
           </figure>
         </div>
         <p class="caption">Tip: swipe left/right. Cards snap gently into place.</p>
