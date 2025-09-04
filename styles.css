@@ -37,8 +37,10 @@ body.intro-open {
   --shadow: 0 1px 3px rgba(0,0,0,.03), 0 4px 12px rgba(0,0,0,.04);
   --shadow-hover: 0 2px 6px rgba(0,0,0,.06), 0 8px 24px rgba(0,0,0,.08);
   --maxw: 720px;
-  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-fast: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  /* Limit transitions to GPU-friendly properties */
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --transition: transform 0.3s var(--ease), opacity 0.3s var(--ease), box-shadow 0.3s var(--ease), background-color 0.3s var(--ease), filter 0.3s var(--ease);
+  --transition-fast: transform 0.15s var(--ease), opacity 0.15s var(--ease);
 }
 
 /* --- Animations --- */
@@ -58,21 +60,7 @@ body.intro-open {
   to { opacity: 1; }
 }
 
-@keyframes float {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-8px); }
-}
-
-@keyframes slideInLeft {
-  from {
-    opacity: 0;
-    transform: translateX(-40px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
+/* Removed unused keyframes to reduce CSS weight */
 
 .animate-on-scroll {
   opacity: 0;
@@ -182,11 +170,12 @@ body.intro-open {
 .btn--primary { 
   background: linear-gradient(135deg, var(--accent), var(--accent-light));
   color: white;
-  box-shadow: var(--shadow), 0 0 20px rgba(107, 142, 35, 0.3);
+  /* simplify shadow to reduce repaint cost */
+  box-shadow: var(--shadow);
 }
 .btn--primary:hover {
   transform: translateY(-2px);
-  box-shadow: var(--shadow-hover), 0 0 30px rgba(107, 142, 35, 0.5);
+  box-shadow: var(--shadow-hover);
   background: linear-gradient(135deg, var(--accent-light), var(--accent));
 }
 .btn--ghost { 
@@ -245,6 +234,10 @@ body.intro-open {
   box-shadow: var(--shadow);
   transition: var(--transition);
   transform-origin: center;
+  /* Hint compositor to prep for transform */
+  will-change: transform;
+  /* Skip rendering offscreen until needed (progressive enhancement) */
+  content-visibility: auto;
 }
 .card:hover {
   transform: translateY(-6px) scale(1.02);
@@ -259,6 +252,7 @@ body.intro-open {
 .card img { 
   object-fit: cover; 
   object-position: var(--pos, 50% 50%);
+  will-change: transform;
 }
 
 /* Per-image crop focus utilities */
@@ -268,7 +262,7 @@ body.intro-open {
 .img-pos-clinic { --pos: 50% 35%; }
 .img-pos-angel { --pos: 50% 40%; }
 .card:hover img {
-  transform: scale(1.05);
+  transform: scale(1.03);
 }
 
 .caption { 
@@ -294,8 +288,9 @@ body.intro-open {
   display: grid;
   place-items: center;
   background: radial-gradient(1200px 800px at 50% 40%, rgba(255,255,255,0.95), rgba(248,249,250,0.98));
-  -webkit-backdrop-filter: blur(6px);
-  backdrop-filter: blur(6px);
+  /* Slightly reduced blur to lower cost */
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
   z-index: 10000;
   transition: opacity 320ms ease, visibility 320ms ease;
 }
@@ -349,7 +344,8 @@ body.intro-open {
   inset: 0; 
   background-size: cover;
   background-position: center;
-  filter: blur(12px) brightness(0.6) saturate(95%);
+  /* Slightly lighter blur for performance */
+  filter: blur(8px) brightness(0.65) saturate(100%);
   transform: scale(1.03);
   opacity: 0;
   transition: opacity 260ms ease, transform 300ms ease;
@@ -408,7 +404,7 @@ body.intro-open {
 
 /* subtle entrance for content to feel elevated */
 .lightbox__content {
-  box-shadow: 0 30px 60px rgba(2,6,23,0.55);
+  box-shadow: 0 20px 40px rgba(2,6,23,0.45);
 }
 
 /* --- Footer --- */
