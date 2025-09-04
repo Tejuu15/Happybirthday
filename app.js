@@ -31,8 +31,8 @@
     const main = document.querySelector('main');
     main && main.setAttribute('aria-hidden', 'true');
     openBtn.addEventListener('click', () => {
-      // Confetti burst for celebration
-      if (confettiLayer) burstConfetti(confettiLayer, 140);
+      // Confetti burst (reduced for low-power / data saver)
+      if (confettiLayer) burstConfetti(confettiLayer, (prefersReduce || saveData) ? 60 : 140);
       // No autoplay: avoid fetching audio until user explicitly toggles sound
       // If audio element is missing, hide toggle
       if (!music) {
@@ -96,6 +96,7 @@
   const prefersReduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const saveData = navigator.connection && (navigator.connection.saveData || /2g/.test(String(navigator.connection.effectiveType||'')));
   const lowPower = prefersReduce || saveData;
+  if (lowPower) { document.documentElement.classList.add('lite'); }
 
   // Sprinkles animation: floating colorful dots
   function startSprinkles() {
@@ -436,5 +437,12 @@
   document.addEventListener('keydown', (e) => {
     if (!lightbox || lightbox.getAttribute('aria-hidden') === 'true') return;
     if (e.key === 'Escape') closeLightbox();
+  });
+
+  // Add responsive sizes attribute for film images (bandwidth & CLS improvement)
+  $$('.film img').forEach(img => {
+    if (!img.hasAttribute('sizes')) {
+      img.setAttribute('sizes', '(max-width: 600px) 80vw, 340px');
+    }
   });
 })();
