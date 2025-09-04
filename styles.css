@@ -514,3 +514,11 @@ footer {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* --- Overrides: remove hover / entrance animations (user request) --- */
+.card:hover, .card:focus-visible { transform: none !important; box-shadow: var(--shadow) !important; }
+.card:hover img { transform: none !important; }
+.btn--primary:hover, .btn--ghost:hover, .circle-btn:hover, .sound-toggle:hover { transform: none !important; box-shadow: inherit !important; }
+.animate-on-scroll { opacity: 1 !important; transform: none !important; }
+.title, .subtitle { animation: none !important; }
+.lightbox__img { transition: none !important; transform: none !important; }
