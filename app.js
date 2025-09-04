@@ -5,22 +5,6 @@
   const soundToggle = document.getElementById('soundToggle');
   const sprinklesLayer = document.getElementById('sprinkles');
 
-  // If audio errors out (e.g., files missing), gracefully disable the toggle
-  if (music && soundToggle) {
-    const markUnavailable = () => {
-      soundToggle.setAttribute('aria-pressed', 'false');
-      soundToggle.setAttribute('aria-label', 'Music unavailable');
-      soundToggle.title = 'Music unavailable';
-  soundToggle.disabled = true;
-  soundToggle.style.opacity = '0.5';
-  soundToggle.style.cursor = 'not-allowed';
-    };
-    music.addEventListener('error', markUnavailable);
-    music.addEventListener('stalled', markUnavailable);
-    music.addEventListener('abort', markUnavailable);
-    music.addEventListener('emptied', markUnavailable);
-  }
-
   // Intro overlay logic
   const intro = $('#intro');
   const openBtn = $('#openSurprise');
@@ -31,14 +15,17 @@
     const main = document.querySelector('main');
     main && main.setAttribute('aria-hidden', 'true');
     openBtn.addEventListener('click', () => {
-      // Confetti burst (reduced for low-power / data saver)
-      if (confettiLayer) burstConfetti(confettiLayer, (prefersReduce || saveData) ? 60 : 140);
-      // No autoplay: avoid fetching audio until user explicitly toggles sound
-      // If audio element is missing, hide toggle
-      if (!music) {
-        soundToggle && (soundToggle.style.display = 'none');
-      } else {
-        updateSoundUI(false);
+      // Confetti burst for celebration
+      if (confettiLayer) burstConfetti(confettiLayer, 140);
+      // Start music if available (autoplay allowed after user gesture)
+      if (music) {
+        music.volume = 0.7;
+        music.play().then(() => {
+          updateSoundUI(true);
+        }).catch(() => {
+          // autoplay failed (maybe muted); leave toggle visible
+          updateSoundUI(false);
+        });
       }
       // Start sprinkles animation
       startSprinkles();
@@ -96,7 +83,6 @@
   const prefersReduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const saveData = navigator.connection && (navigator.connection.saveData || /2g/.test(String(navigator.connection.effectiveType||'')));
   const lowPower = prefersReduce || saveData;
-  if (lowPower) { document.documentElement.classList.add('lite'); }
 
   // Sprinkles animation: floating colorful dots
   function startSprinkles() {
@@ -146,57 +132,11 @@
   }
 
   // Sound toggle
-  // Lazy-load audio sources on first user click
-  let audioInitialized = false;
-  async function ensureAudioSource() {
-    if (!music) return false;
-    if (audioInitialized) return true;
-    // Try mp3 first then ogg; use HEAD to check existence
-    const candidates = [
-      { src: 'audio/birthday.mp3', type: 'audio/mpeg' },
-      { src: 'audio/birthday.ogg', type: 'audio/ogg' },
-    ];
-    for (const c of candidates) {
-      try {
-        const res = await fetch(c.src, { method: 'HEAD' });
-        if (res.ok) {
-          music.src = c.src;
-          audioInitialized = true;
-          return true;
-        }
-        // If HEAD not allowed (405) or opaque status, fall through to try assigning src
-        if (res.status === 405) {
-          music.src = c.src;
-          audioInitialized = true;
-          return true;
-        }
-      } catch (_) {
-        // Network/HEAD unsupported; fall back to assigning src and letting play() validate
-        music.src = c.src;
-        audioInitialized = true;
-        return true;
-      }
-    }
-    return false;
-  }
-
   if (soundToggle) {
-    soundToggle.addEventListener('click', async () => {
-      if (!music) { soundToggle.style.display = 'none'; return; }
+    soundToggle.addEventListener('click', () => {
+      if (!music) return;
       if (music.paused) {
-        const ok = await ensureAudioSource();
-        if (!ok) {
-          // No audio available
-          soundToggle.disabled = true;
-          soundToggle.title = 'Music unavailable';
-          soundToggle.setAttribute('aria-label', 'Music unavailable');
-          soundToggle.style.opacity = '0.5';
-          return;
-        }
-        music.play().then(() => updateSoundUI(true)).catch((err) => {
-          console.warn('Play failed:', err && err.name || err);
-          updateSoundUI(false);
-        });
+        music.play().then(() => updateSoundUI(true));
       } else {
         music.pause();
         updateSoundUI(false);
@@ -246,41 +186,35 @@
     function smoothSnapToCard() {
       clearTimeout(snapTimeout);
       snapTimeout = setTimeout(() => {
-        const cards = film.querySelectorAll('.card');
-        if (!cards.length) return;
-        const containerRect = film.getBoundingClientRect();
-        const containerCenter = containerRect.left + containerRect.width / 2;
-        let closest = null; let closestDist = Infinity;
-        cards.forEach(card => {
-          const r = card.getBoundingClientRect();
-          const cardCenter = r.left + r.width / 2;
-            const d = Math.abs(cardCenter - containerCenter);
-            if (d < closestDist) { closestDist = d; closest = card; }
+        const cardWidth = film.querySelector('.card')?.offsetWidth || 300;
+        const gap = 16;
+        const scrollLeft = film.scrollLeft;
+        const targetIndex = Math.round(scrollLeft / (cardWidth + gap));
+        const targetScroll = targetIndex * (cardWidth + gap);
+        
+        film.scrollTo({
+          left: targetScroll,
+          behavior: 'smooth'
         });
-        if (closest) {
-          const target = closest.offsetLeft - (film.clientWidth - closest.offsetWidth) / 2;
-          film.scrollTo({ left: target, behavior: 'smooth' });
-        }
-      }, 80);
+      }, 100);
     }
 
     function onPointerDown(e) {
-      // Accept touch, mouse, pen
-      isDown = true;
-      try { film.setPointerCapture(e.pointerId); } catch(_){ }
-      startX = e.clientX;
-      startScroll = film.scrollLeft;
-      lastX = e.clientX;
-      lastT = performance.now();
-      vx = 0;
-      cancelAnimationFrame(momentumId);
-      film.style.scrollSnapType = 'none'; // Disable snap during drag
+      if (e.pointerType === 'mouse' || e.pointerType === 'pen') {
+        isDown = true;
+        film.setPointerCapture(e.pointerId);
+        startX = e.clientX;
+        startScroll = film.scrollLeft;
+        lastX = e.clientX;
+        lastT = performance.now();
+        vx = 0;
+        cancelAnimationFrame(momentumId);
+        film.style.scrollSnapType = 'none'; // Disable snap during drag
+      }
     }
 
     function onPointerMove(e) {
       if (!isDown) return;
-      // Prevent vertical scroll hijack only if horizontal movement dominates
-      if (e.cancelable) e.preventDefault();
       const dx = e.clientX - startX;
       film.scrollLeft = startScroll - dx;
       const now = performance.now();
@@ -296,37 +230,31 @@
       if (!isDown) return;
       isDown = false;
       try { film.releasePointerCapture(e.pointerId); } catch(_){}
-      // Keep snap disabled during momentum; re-enable after settle
+      
+      // Re-enable snap
+      film.style.scrollSnapType = 'x mandatory';
+      
       // Enhanced momentum with better feel
-      let v = vx * 22; // slightly stronger initial velocity
+      let v = vx * 20;
       const maxScroll = film.scrollWidth - film.clientWidth;
-
-      function finish() {
-        // Re-enable snap & snap gently to nearest
-        film.style.scrollSnapType = 'x mandatory';
-        smoothSnapToCard();
-      }
-
+      
       function step() {
         film.scrollLeft = Math.min(maxScroll, Math.max(0, film.scrollLeft - v));
         v *= friction;
         if (Math.abs(v) > minV) {
           momentumId = requestAnimationFrame(step);
         } else {
-          finish();
+          smoothSnapToCard();
         }
       }
-
-      if (Math.abs(v) > minV) {
-        step();
-      } else {
-        finish();
-      }
+      
+      if (Math.abs(v) > minV) step();
+      else smoothSnapToCard();
     }
 
     // Enhanced event listeners
-  film.addEventListener('pointerdown', onPointerDown, { passive: true });
-  film.addEventListener('pointermove', onPointerMove, { passive: false });
+    film.addEventListener('pointerdown', onPointerDown, { passive: true });
+    film.addEventListener('pointermove', onPointerMove, { passive: true });
     film.addEventListener('pointerup', onPointerUp, { passive: true });
     film.addEventListener('pointercancel', onPointerUp, { passive: true });
     film.addEventListener('mouseleave', onPointerUp, { passive: true });
@@ -351,7 +279,8 @@
       }
     });
 
-  // Removed continuous scroll listener to avoid jitter; snapping occurs after drag/momentum.
+    // Touch-friendly scroll snap fallback
+    film.addEventListener('scroll', smoothSnapToCard, { passive: true });
   }
 
   // Boost initial UX: focus the film on anchor click for keyboard
@@ -437,12 +366,5 @@
   document.addEventListener('keydown', (e) => {
     if (!lightbox || lightbox.getAttribute('aria-hidden') === 'true') return;
     if (e.key === 'Escape') closeLightbox();
-  });
-
-  // Add responsive sizes attribute for film images (bandwidth & CLS improvement)
-  $$('.film img').forEach(img => {
-    if (!img.hasAttribute('sizes')) {
-      img.setAttribute('sizes', '(max-width: 600px) 80vw, 340px');
-    }
   });
 })();
